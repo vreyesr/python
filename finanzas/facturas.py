@@ -7,8 +7,11 @@ from tabulate import tabulate
 
 
 def get_files(year):
-    dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
-    return [os.path.join(dir, f) for f in os.listdir(dir) if fnmatch.fnmatch(f, '*.xml')]
+    try:
+        dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
+        return [os.path.join(dir, f) for f in os.listdir(dir) if fnmatch.fnmatch(f, '*.xml')]
+    except FileNotFoundError:
+        sys.exit("Please check directory is under 2013 and current year")
 
 
 def list_f(year):
