@@ -6,6 +6,7 @@ import argparse
 from tabulate import tabulate
 import psycopg2
 
+__version__ = "20210311.01"
 
 def get_files(year):
     try:
