@@ -63,7 +63,7 @@ def list_f(year):
     if args.database:
         con = None
         try:
-            con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password='kmslit299')
+            con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password='')
             cur = con.cursor()
             for x in list_fac:
                 id=(x[5].split(".")[0])
