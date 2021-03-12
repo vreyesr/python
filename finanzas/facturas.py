@@ -34,7 +34,7 @@ def list_f(year):
                 v_desc = root[2][0].get('descripcion')
                 v_total = root.get("total")
             if v_fec or v_rfc or v_name or v_desc or v_total:
-                list_fac.append((v_fec, v_rfc, v_name, v_desc, v_total, i[-40:-32]))
+                list_fac.append((v_fec, v_rfc, v_name, v_desc, v_total, i[-40:][:8]))
         except IndexError:
             file_err.append(i)
     for i in file_err:
@@ -45,7 +45,7 @@ def list_f(year):
         v_desc = root[3][0].get('Descripcion')
         v_total = root.get("Total")
         if v_fec or v_rfc or v_name or v_desc or v_total:
-            list_fac.append((v_fec, v_rfc, v_name, v_desc, v_total, i[-40:-32]))
+            list_fac.append((v_fec, v_rfc, v_name, v_desc, v_total, i[-40:][:8]))
     if args.exclude:
         filter_list = [x for x in list_fac if args.exclude not in x[2]]
         filter_list.append(("=== TOTAL ===", " ", " ", " ", sum([float(x[4]) for x in filter_list])))
@@ -62,12 +62,11 @@ def list_f(year):
     if args.database:
         con = None
         try:
-            con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password='')
+            con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password='kmslit299')
             cur = con.cursor()
             for x in list_fac:
                 id=(x[5].split(".")[0])
-                cur.execute("insert into fnz_data.facturas values (%s,%s,%s,%s,%s,%s) "
-                            "on conflict (file_id) do nothing;", [
+                cur.execute("insert into fnz_data.facturas values (%s,%s,%s,%s,%s,%s)", [
                     id, x[0], x[1], x[2], x[3], x[4]
                 ])
             con.commit()
