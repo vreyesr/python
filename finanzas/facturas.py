@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 from lxml import etree
 import os
 import fnmatch
@@ -6,7 +8,7 @@ import argparse
 from tabulate import tabulate
 import psycopg2
 
-__version__ = "20210311.01"
+__version__ = "20210319.01"
 
 def get_files(year):
     try:
@@ -67,7 +69,7 @@ def list_f(year):
             cur = con.cursor()
             for x in list_fac:
                 id=(x[5].split(".")[0])
-                cur.execute("insert into fnz_data.facturas values (%s,%s,%s,%s,%s,%s)", [
+                cur.execute("insert into fnz_data.facturas values (%s,%s,%s,%s,%s,%s) on conflict do nothing", [
                     id, x[0], x[1], x[2], x[3], x[4]
                 ])
             con.commit()
