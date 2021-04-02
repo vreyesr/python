@@ -10,10 +10,11 @@ import psycopg2
 
 __version__ = "20210319.01"
 
+
 def get_files(year):
     try:
-        dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
-        return [os.path.join(dir, f) for f in os.listdir(dir) if fnmatch.fnmatch(f, '*.xml')]
+        local_dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
+        return [os.path.join(local_dir, f) for f in os.listdir(local_dir) if fnmatch.fnmatch(f, '*.xml')]
     except FileNotFoundError:
         sys.exit("Please check directory is under 2013 and current year")
 
@@ -68,9 +69,9 @@ def list_f(year):
             con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password='')
             cur = con.cursor()
             for x in list_fac:
-                id=(x[5].split(".")[0])
+                id_db = (x[5].split(".")[0])
                 cur.execute("insert into fnz_data.facturas values (%s,%s,%s,%s,%s,%s) on conflict do nothing", [
-                    id, x[0], x[1], x[2], x[3], x[4]
+                    id_db, x[0], x[1], x[2], x[3], x[4]
                 ])
             con.commit()
 
@@ -96,7 +97,7 @@ def parse_args():
     parser.add_argument('-x', '--exclude', dest="exclude", help="Specific a RFC")
     parser.add_argument('-db', '--database', action="store_true", help="Specific a RFC")
 
-    args = parser.parse_args()
+    local_args = parser.parse_args()
 
     try:
         if len(sys.argv) == 1:
@@ -105,7 +106,7 @@ def parse_args():
     except Exception:
         sys.exit(1)
 
-    return args
+    return local_args
 
 
 if __name__ == "__main__":
