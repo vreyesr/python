@@ -8,6 +8,7 @@ import fnmatch
 import sys
 import argparse
 from tabulate import tabulate
+import psycopg2
 
 
 
