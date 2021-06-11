@@ -1,5 +1,7 @@
 #! /usr/bin/python3
 
+__version__ = "20210610.01"
+
 from lxml import etree
 import os
 import fnmatch
@@ -47,34 +49,43 @@ def viewnom(file_name):
     #print(nomina_data.get('TotalDeducciones'), nomina_data.get('TotalPercepciones'))  
 
     #print("Percepciones")
-    for k in range(len(root[3][0][2])):
-       importe_gravado = float(root[3][0][2][k].get('ImporteGravado'))
-       importe_exento = float(root[3][0][2][k].get('ImporteExento'))
-       if float(root[3][0][2][k].get('ImporteGravado')) > 0:
-           #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-           total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-       if float(root[3][0][2][k].get('ImporteExento')) > 0:
-           #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}*".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-           total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-    #print(tabulate(total))
+    try:
+       for k in range(len(root[3][0][2])):
+          importe_gravado = float(root[3][0][2][k].get('ImporteGravado'))
+          importe_exento = float(root[3][0][2][k].get('ImporteExento'))
+          if float(root[3][0][2][k].get('ImporteGravado')) > 0:
+              #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+              total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+          if float(root[3][0][2][k].get('ImporteExento')) > 0:
+              #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}*".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+              total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+    except TypeError:
+        for k in range(len(root[3][0][2])):
+            otro_importe = float(root[3][0][2][k].get('Importe'))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',  root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
 
     #print("Deducciones")
-    for k in range(len(root[3][0][3])):
-        importe = float(root[3][0][3][k].get('Importe'))
-        #print(('-', root[3][0][3][k].get('Importe'), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
-        #total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:,.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
-        total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
-    #print(tabulate(total))
+    try:
+        for k in range(len(root[3][0][3])):
+            importe = float(root[3][0][3][k].get('Importe'))
+            #print(('-', root[3][0][3][k].get('Importe'), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
+            #total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:,.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
+    except IndexError:
+        pass 
 
     #print("Otro Pagos")
-    for k in range(len(root[3][0][4])):
-        otro_importe = float(root[3][0][4][k].get('Importe'))
-#        print(root[3][0][4][k].get('Concepto'), root[3][0][4][k].get('Importe'))
-        #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
-        total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
-    #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
-    #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
+    try:
+        for k in range(len(root[3][0][4])):
+            otro_importe = float(root[3][0][4][k].get('Importe'))
+#            print(root[3][0][4][k].get('Concepto'), root[3][0][4][k].get('Importe'))
+            #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
+        #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
+        #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
 	#print(tabulate(sorted(total, key=lambda x: x[6]), floatfmt=".3f", numalign="right"))
+    except IndexError:
+        pass
     
     return total
     #print(tabulate(sorted(total, key=lambda x: x[7]), stralign="right", headers= headers))
