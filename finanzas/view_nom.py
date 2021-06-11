@@ -109,6 +109,8 @@ def main():
     headers = ['# Emp', 'F. Inicial', 'F. Final', 'Dias', 'Percepciones', 'Deducciones', 'Concepto', 'Clave']
     #viewnom(args.filename)
     print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers= headers))
+    if args.database:
+       db_postgres(viewnom(args.filename))
 
 
 if __name__ == '__main__':
