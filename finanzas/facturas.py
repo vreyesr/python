@@ -7,8 +7,9 @@ import sys
 import argparse
 from tabulate import tabulate
 import psycopg2
+import cx_Oracle
 
-__version__ = "20210319.01"
+__version__ = "20210622.01"
 
 
 def get_files(year):
@@ -82,6 +83,27 @@ def list_f(year):
             if con:
                 con.close()
 
+    if args.ocidb:
+        connection = None
+        try:
+            cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient\instantclient_19_11")
+            connection = cx_Oracle.connect(user="", password="", dsn="")
+            cursor = connection.cursor()
+            for x in list_fac:
+                id_db = (x[5].split(".")[0])
+                cursor.execute("insert into vbrr.facturas values (:file_id, to_timestamp(:fecha,'YYYY-MM-DD HH24:MI:SS'),:rfc,:nombre,:descrip, to_number(:total))", [
+                    id_db, x[0].replace('T', ' '), x[1], x[2], x[3], x[4]
+                ])
+            connection.commit()
+
+        except cx_Oracle.DatabaseError as e:
+            print('Error %s' % e)
+            sys.exit(1)
+        finally:
+            if connection:
+                connection.close()
+
+
     list_fac.append(("=== TOTAL ===", " ", " ", " ", sum([float(x[4]) for x in list_fac])))
     return list_fac
 
@@ -96,6 +118,7 @@ def parse_args():
     parser.add_argument('-m', '--mes', dest="mes", help="Specific a RFC")
     parser.add_argument('-x', '--exclude', dest="exclude", help="Specific a RFC")
     parser.add_argument('-db', '--database', action="store_true", help="Specific a RFC")
+    parser.add_argument('-ocidb', '--ocidb', action="store_true", help="Specific a RFC")
 
     local_args = parser.parse_args()
 
