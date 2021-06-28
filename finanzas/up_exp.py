@@ -36,15 +36,27 @@ def parse_args():
 
 
 
-def db_postgres():
+def db_postgres(pgquery=None, exp_id=None, value=None, comm=None):
     con = None
-    db_pwd =  os.environ.get("POSTGRES_PWD")
+    current_ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    pg_user =  os.environ.get("POSTGRES_USER")
+    pg_host =  os.environ.get("POSTGRES_HOST")
+    pg_db =  os.environ.get("POSTGRES_DB")
+    pg_pwd =  os.environ.get("POSTGRES_PWD")
     try:
-        con = psycopg2.connect(database='vbrr_db', user='postgres', host='192.168.15.99', password=db_pwd)
+        con = psycopg2.connect(database=pg_db, user=pg_user, host=pg_host, password=pg_pwd)
         cur = con.cursor()
-        cur.execute("select * from fnz_data.expenses2") 
-        print(tabulate(cur.fetchall()))
+        if pgquery:
+            cur.execute("select * from fnz_data.expenses2 order by fecha") 
+            print(tabulate(cur.fetchall()))
         #cur.execute("select * from fnz_data.expenses2 values (%s,%s,%s,%s,%s,%s,%s)", [x[7], x[0], x[1], x[2], dia, per, ded ])
+
+        if exp_id and value and comm:
+            print(exp_id, value,comm)
+            print([int(exp_id), current_ts, int(value), comm])
+            cur.execute("insert into fnz_data.expenses2 values (%s, %s, %s, %s)", 
+                           [int(exp_id), current_ts, int(value), comm ])
+            con.commit()
 
     except psycopg2.DatabaseError as e:
         print('Error %s' % e)
@@ -97,8 +109,12 @@ def main():
         db_oracle(query=True)
     elif args.oracle and args.exp_id and args.value and args.comm:
         db_oracle(exp_id=args.exp_id, value=args.value, comm=args.comm)
-    if args.postgres:
-        db_postgres()
+
+    if args.postgres and args.query:
+        db_postgres(pgquery=True)
+
+    if args.postgres and args.exp_id and args.value and args.comm:
+        db_postgres(exp_id=args.exp_id, value=args.value, comm=args.comm)
 
 
 if __name__ == '__main__':
