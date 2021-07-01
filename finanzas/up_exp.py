@@ -88,9 +88,9 @@ def db_oracle(dblist=None, query=None, exp_id=None, value=None, comm=None):
                 list_data = cursor.fetchall()
                 print(tabulate(list_data))
             if exp_id and value and comm:
-                print([int(args.exp_id), current_ts, int(args.value), args.comm])
+                print([int(exp_id), current_ts, int(value), comm])
                 cursor.execute("insert into expenses values (:cpto_id, :fecha, :cant, :commentario)", 
-                               [int(args.exp_id), current_ts, int(args.value), args.comm ])
+                               [int(exp_id), current_ts, int(value), comm ])
                 connection.commit()
 
         except cx_Oracle.DatabaseError as e:
