@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 from lxml import etree
 import os
@@ -8,13 +8,16 @@ import argparse
 from tabulate import tabulate
 import psycopg2
 import cx_Oracle
+import os
 
 __version__ = "20210622.01"
 
 
 def get_files(year):
     try:
-        local_dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
+        # local_dir = "D:/finanazas/impuestos/shcp/Facturas/{0}/".format(year)
+        local_dir =  os.environ.get("PATH_FACT") + "/" + year
+        print(local_dir)
         return [os.path.join(local_dir, f) for f in os.listdir(local_dir) if fnmatch.fnmatch(f, '*.xml')]
     except FileNotFoundError:
         sys.exit("Please check directory is under 2013 and current year")
@@ -111,14 +114,15 @@ def list_f(year):
 def parse_args():
     parser = argparse.ArgumentParser(prog="facturas.py",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description="Database reports for LibreNMS and SWR")
+                                     description="Database reports for LibreNMS and SWR",
+                                     epilog = "Use the export PATH_FACT= variable")
 
     parser.add_argument('-y', '--year', dest="year", help="Specific a Year use YYYY")
     parser.add_argument('-r', '--rfc', dest="rfc", help="Specific a RFC")
-    parser.add_argument('-m', '--mes', dest="mes", help="Specific a RFC")
-    parser.add_argument('-x', '--exclude', dest="exclude", help="Specific a RFC")
-    parser.add_argument('-db', '--database', action="store_true", help="Specific a RFC")
-    parser.add_argument('-ocidb', '--ocidb', action="store_true", help="Specific a RFC")
+    parser.add_argument('-m', '--mes', dest="mes", help="Specific a month 01 to 12")
+    parser.add_argument('-x', '--exclude', dest="exclude", help="Exclude a Emisor name")
+    parser.add_argument('-db', '--database', action="store_true", help="Store data to Postgres Database")
+    parser.add_argument('-ocidb', '--ocidb', action="store_true", help="Store data to Oracle Database")
 
     local_args = parser.parse_args()
 
