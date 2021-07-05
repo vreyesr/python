@@ -13,7 +13,8 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser(prog="up_exp.py",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description="Database reports for LibreNMS and SWR")
+                                     description="Database reports for LibreNMS and SWR",
+                                     epilog= "\nexport POSTGRES_USER=\nexport POSTGRES_HOST=\nexport POSTGRES_DB=\nexport POSTGRES_PwD=\n\nexport ORACLE_USER=\nexport ORACLE_OONN=\nexport ORACLE_PWD=\n")
 
     parser.add_argument('-l', '--dblist', action="store_true", help="Specific a Year use YYYY")
     parser.add_argument('-q', '--query', action="store_true", help="Specific a Year use YYYY")
@@ -53,9 +54,9 @@ def db_postgres(pgquery=None, exp_id=None, value=None, comm=None):
 
         if exp_id and value and comm:
             print(exp_id, value,comm)
-            print([int(exp_id), current_ts, int(value), comm])
+            print([int(exp_id), current_ts, float(value), comm])
             cur.execute("insert into fnz_data.expenses2 values (%s, %s, %s, %s)", 
-                           [int(exp_id), current_ts, int(value), comm ])
+                           [int(exp_id), current_ts, float(value), comm ])
             con.commit()
 
     except psycopg2.DatabaseError as e:
@@ -88,9 +89,9 @@ def db_oracle(dblist=None, query=None, exp_id=None, value=None, comm=None):
                 list_data = cursor.fetchall()
                 print(tabulate(list_data))
             if exp_id and value and comm:
-                print([int(exp_id), current_ts, int(value), comm])
+                print([int(exp_id), current_ts, float(value), comm])
                 cursor.execute("insert into expenses values (:cpto_id, :fecha, :cant, :commentario)", 
-                               [int(exp_id), current_ts, int(value), comm ])
+                               [int(exp_id), current_ts, float(value), comm ])
                 connection.commit()
 
         except cx_Oracle.DatabaseError as e:
