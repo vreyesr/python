@@ -14,7 +14,7 @@ def parse_args():
     parser = argparse.ArgumentParser(prog="up_exp.py",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description="Database reports for LibreNMS and SWR",
-                                     epilog= "\nexport POSTGRES_USER=\nexport POSTGRES_HOST=\nexport POSTGRES_DB=\nexport POSTGRES_PwD=\n\nexport ORACLE_USER=\nexport ORACLE_OONN=\nexport ORACLE_PWD=\n")
+                                     epilog= "\nexport POSTGRES_USER=\nexport POSTGRES_HOST=\nexport POSTGRES_DB=\nexport POSTGRES_PwD=\n\nexport ORACLE_USER=\nexport ORACLE_CONN=\nexport ORACLE_PWD=\n")
 
     parser.add_argument('-l', '--dblist', action="store_true", help="Specific a Year use YYYY")
     parser.add_argument('-q', '--query', action="store_true", help="Specific a Year use YYYY")
