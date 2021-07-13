@@ -35,6 +35,7 @@ def parse_args():
 
 
 def viewnom(file_name):
+    global total_percep, total_deducc, total_vales
     root = etree.parse(file_name).getroot()
 
     emisor = root[0]
@@ -59,10 +60,10 @@ def viewnom(file_name):
             importe_gravado = float(root[3][0][2][k].get('ImporteGravado'))
             importe_exento = float(root[3][0][2][k].get('ImporteExento'))
             if float(root[3][0][2][k].get('ImporteGravado')) > 0:
-                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(importe_gravado), '-',
+                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_gravado), '-',
                               root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
             if float(root[3][0][2][k].get('ImporteExento')) > 0:
-                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(importe_exento), '-',
+                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_exento), '-',
                               root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
             if root[3][0][2][k].get('Concepto').split('_')[0] == '400':
                 vales_desp = importe_exento
@@ -72,14 +73,14 @@ def viewnom(file_name):
     except TypeError:
         for k in range(len(root[3][0][2])):
             otro_importe = float(root[3][0][2][k].get('Importe'))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(otro_importe), '-',
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',
                           root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
 
     # print("Deducciones")
     try:
         for k in range(len(root[3][0][3])):
             importe = float(root[3][0][3][k].get('Importe'))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:,.2f}".format(importe),
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:.2f}".format(importe),
                           root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0]))
     except IndexError:
         pass 
@@ -88,14 +89,12 @@ def viewnom(file_name):
     try:
         for k in range(len(root[3][0][4])):
             otro_importe = float(root[3][0][4][k].get('Importe'))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(otro_importe), '-',
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',
                           root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
             # print(tabulate(sorted(total, key=lambda x: x[6]), floatfmt=".3f", numalign="right"))
     except IndexError:
         pass
     
-    total.append(("-","-","-","-","{:,.2f}".format(float(total_percep)),"{:,.2f}".format(float(total_deducc)),
-                  "{:,.2f}".format(float(total_percep)-float(total_deducc) - float(total_vales)),"999"))
     return total
 
     # print(tabulate(sorted(total, key=lambda x: x[7]), stralign="right", headers= headers))
@@ -153,9 +152,12 @@ def db_oracle(list_fac):
 def main():
     args = parse_args()
     headers = ['# Emp', 'F. Inicial', 'F. Final', 'Dias', 'Percepciones', 'Deducciones', 'Concepto', 'Clave']
-    # viewnom(args.filename)
-    print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers=headers))
-#    print(tabulate([" "," "," "," ", total_percep, total_deducc, " ", " "]))
+    list_nom = viewnom(args.filename)
+    # print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers=headers))
+    list_nom.append(("-","-","-","-","{:,.2f}".format(float(total_percep)),"{:,.2f}".format(float(total_deducc)),
+                  "{:,.2f}".format(float(total_percep)-float(total_deducc) - float(total_vales)),"999"))
+    print(tabulate(sorted(list_nom, key=lambda x: x[7]), stralign="right", headers=headers))
+
     if args.database:
         db_postgres(viewnom(args.filename))
     if args.oracle:
