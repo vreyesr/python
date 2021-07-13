@@ -14,7 +14,7 @@ def parse_args():
     parser = argparse.ArgumentParser(prog="up_exp.py",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description="Database reports for LibreNMS and SWR",
-                                     epilog= "\nexport POSTGRES_USER=\nexport POSTGRES_HOST=\nexport POSTGRES_DB=\nexport POSTGRES_PwD=\n\nexport ORACLE_USER=\nexport ORACLE_OONN=\nexport ORACLE_PWD=\n")
+                                     epilog= "\nexport POSTGRES_USER=\nexport POSTGRES_HOST=\nexport POSTGRES_DB=\nexport POSTGRES_PwD=\n\nexport ORACLE_USER=\nexport ORACLE_CONN=\nexport ORACLE_PWD=\n")
 
     parser.add_argument('-l', '--dblist', action="store_true", help="Specific a Year use YYYY")
     parser.add_argument('-q', '--query', action="store_true", help="Specific a Year use YYYY")
@@ -69,7 +69,7 @@ def db_postgres(pgquery=None, exp_id=None, value=None, comm=None):
 
 
 def db_oracle(dblist=None, query=None, exp_id=None, value=None, comm=None):
-        current_ts = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S')
+        current_ts = datetime.datetime.now().strftime('%d-%b-%y %I:%M:%S')
         connection = None
         db_user = os.environ.get("ORACLE_USER")
         db_dns =  os.environ.get("ORACLE_CONN")
