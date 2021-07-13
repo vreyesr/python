@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__version__ = "20210610.01"
+__version__ = "20210713.01"
 
 from lxml import etree
 import os
@@ -11,7 +11,6 @@ import argparse
 from tabulate import tabulate
 import psycopg2
 import cx_Oracle
-
 
 
 def parse_args():
@@ -38,8 +37,8 @@ def parse_args():
 def viewnom(file_name):
     root = etree.parse(file_name).getroot()
 
-    emisor =  root[0] 
-    receptor =  root[1]
+    emisor = root[0]
+    receptor = root[1]
     nomina_data = root[3][0]
     num_empleado = nomina_data[1].get('NumEmpleado')
     fecha_inicial = nomina_data.get('FechaInicialPago')
@@ -47,55 +46,50 @@ def viewnom(file_name):
     dias = nomina_data.get('NumDiasPagados')
     
     print(tabulate([(emisor.get('Nombre'), emisor.get('Rfc'))], tablefmt="plain"))
-    print(tabulate([(receptor.get('Nombre'), receptor.get('Rfc'), nomina_data[1].get('Curp'), nomina_data[1].get('NumSeguridadSocial'), nomina_data[1].get('Puesto'))], tablefmt="sql"))
+    print(tabulate([(receptor.get('Nombre'), receptor.get('Rfc'), nomina_data[1].get('Curp'),
+                     nomina_data[1].get('NumSeguridadSocial'), nomina_data[1].get('Puesto'))], tablefmt="sql"))
     total = []
     headers = ['# Emp', 'F. Inicial', 'F. Final', 'Dias', 'Percepciones', 'Deducciones', 'Concepto', 'Clave']
-    #print(nomina_data.get('FechaInicialPago'), nomina_data.get('FechaFinalPago'), nomina_data.get('NumDiasPagados'))
-    #print(nomina_data.get('TotalDeducciones'), nomina_data.get('TotalPercepciones'))  
 
-    #print("Percepciones")
+    # print("Percepciones")
     try:
-       for k in range(len(root[3][0][2])):
-          importe_gravado = float(root[3][0][2][k].get('ImporteGravado'))
-          importe_exento = float(root[3][0][2][k].get('ImporteExento'))
-          if float(root[3][0][2][k].get('ImporteGravado')) > 0:
-              #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-              total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_gravado), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-          if float(root[3][0][2][k].get('ImporteExento')) > 0:
-              #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}*".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
-              total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_exento), '-', root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+        for k in range(len(root[3][0][2])):
+            importe_gravado = float(root[3][0][2][k].get('ImporteGravado'))
+            importe_exento = float(root[3][0][2][k].get('ImporteExento'))
+            if float(root[3][0][2][k].get('ImporteGravado')) > 0:
+                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_gravado), '-',
+                              root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+            if float(root[3][0][2][k].get('ImporteExento')) > 0:
+                total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(importe_exento), '-',
+                              root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
     except TypeError:
         for k in range(len(root[3][0][2])):
             otro_importe = float(root[3][0][2][k].get('Importe'))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',  root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',
+                          root[3][0][2][k].get('Concepto').split('_')[1], root[3][0][2][k].get('Concepto').split('_')[0]))
 
-    #print("Deducciones")
+    # print("Deducciones")
     try:
         for k in range(len(root[3][0][3])):
             importe = float(root[3][0][3][k].get('Importe'))
-            #print(('-', root[3][0][3][k].get('Importe'), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
-            #total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:,.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:.2f}".format(importe), root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0] ))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, '-', "{:.2f}".format(importe),
+                          root[3][0][3][k].get('Concepto').split('_')[1], root[3][0][3][k].get('Concepto').split('_')[0]))
     except IndexError:
         pass 
 
-    #print("Otro Pagos")
+    # print("Otro Pagos")
     try:
         for k in range(len(root[3][0][4])):
             otro_importe = float(root[3][0][4][k].get('Importe'))
-#            print(root[3][0][4][k].get('Concepto'), root[3][0][4][k].get('Importe'))
-            #total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:,.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
-            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',  root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
-        #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
-        #print(tabulate(total, floatfmt=("","","",",.2f",",.2f"), colalign=("","","","right","right","right")))
-	#print(tabulate(sorted(total, key=lambda x: x[6]), floatfmt=".3f", numalign="right"))
+            total.append((num_empleado, fecha_inicial, fecha_final, dias, "{:.2f}".format(otro_importe), '-',
+                          root[3][0][4][k].get('Concepto').split('_')[1], root[3][0][4][k].get('Concepto').split('_')[0]))
+            # print(tabulate(sorted(total, key=lambda x: x[6]), floatfmt=".3f", numalign="right"))
     except IndexError:
         pass
     
     return total
-    #print(tabulate(sorted(total, key=lambda x: x[7]), stralign="right", headers= headers))
-  
-    #print([(int(x[7]), x[0], x[1], x[2], int(float(x[3])), float(x[4].replace('-','0')), float(x[5].replace('-','0'))) for x in total])
+    # print(tabulate(sorted(total, key=lambda x: x[7]), stralign="right", headers= headers))
+    # print([(int(x[7]), x[0], x[1], x[2], int(float(x[3])), float(x[4].replace('-','0')), float(x[5].replace('-','0'))) for x in total])
 
 
 def db_postgres(list_fac):
@@ -105,9 +99,9 @@ def db_postgres(list_fac):
         cur = con.cursor()
         for x in list_fac:
             dia = int(float(x[3]))
-            per = x[4].replace('-','0')
-            ded = x[5].replace('-','0')
-            cur.execute("insert into fnz_data.nomina values (%s,%s,%s,%s,%s,%s,%s)", [x[7], x[0], x[1], x[2], dia, per, ded ])
+            per = x[4].replace('-', '0')
+            ded = x[5].replace('-', '0')
+            cur.execute("insert into fnz_data.nomina values (%s,%s,%s,%s,%s,%s,%s)", [x[7], x[0], x[1], x[2], dia, per, ded])
             con.commit()
 
     except psycopg2.DatabaseError as e:
@@ -119,48 +113,43 @@ def db_postgres(list_fac):
 
 
 def db_oracle(list_fac):
-        #print(list_fac)
-
-        #current_ts = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S')
-        connection = None
-        db_user = 'vbrr' #os.environ.get("ORACLE_USER")
-        db_dns =  'vbrrdb_high' #os.environ.get("ORACLE_CONN")
-        db_pwd =  'Lnx141501db$$' #os.environ.get("ORACLE_PWD")
-        #try:
-        c=[]
+    # current_ts = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S')
+    connection = None
+    db_user = 'vbrr'  # os.environ.get("ORACLE_USER")
+    db_dns = 'vbrrdb_high'  # os.environ.get("ORACLE_CONN")
+    db_pwd = 'Lnx141501db$$'  # os.environ.get("ORACLE_PWD")
+    try:
         cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
         connection = cx_Oracle.connect(user=db_user, password=db_pwd, dsn=db_dns)
         cursor = connection.cursor()
         for x in list_fac:
             dia = int(float(x[3]))
-            per = x[4].replace('-', '0')
-            ded = x[5].replace('-', '0')
-            print(str(x[0]), x[1], x[2], float(dia), float(per), float(ded), x[6], x[7])
-            cursor.execute("insert into nomina values (:emp_n, to_date(to_char(:f_inicial,'DD-MON-YY')), to_date(to_char(:f_final,'DD-MON-YY')), "
-                           "to_number(:dias), to_number(:percep), to_number(:deduc), :concepto, to_number(:clave))",
-                        [str(x[0]), x[1], x[2], float(dia), float(per), float(ded), x[6], int(x[7])])
-            connection.commit()
-        #except cx_Oracle.DatabaseError as e:
-        #    print('Error %s' % e)
-        #    sys.exit(1)
-        #finally:
-        #    if connection:
-        connection.close()
-
-
-
+            per = float(x[4].replace('-', '0'))
+            ded = float(x[5].replace('-', '0'))
+            clave = int(x[7])
+            print(str(x[0]), x[1], x[2], dia, per, ded, x[6], clave)
+            cursor.execute("insert into nomina values (:emp_no, to_date(:f_inicial,'YYYY-MM-DD'), "
+                           "to_date(:f_final,'YYYY-MM-DD'), :dias, :percep, :deduc, :concepto, :clave)",
+                           [str(x[0]), x[1], x[2], dia, per, ded, str(x[6]), clave])
+        connection.commit()
+    except cx_Oracle.DatabaseError as e:
+        print('Error %s' % e)
+        sys.exit(1)
+    finally:
+        if connection:
+            connection.close()
 
 
 def main():
     args = parse_args()
     headers = ['# Emp', 'F. Inicial', 'F. Final', 'Dias', 'Percepciones', 'Deducciones', 'Concepto', 'Clave']
-    #viewnom(args.filename)
-    print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers= headers))
+    # viewnom(args.filename)
+    print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers=headers))
     if args.database:
         db_postgres(viewnom(args.filename))
     if args.oracle:
         db_oracle(viewnom(args.filename))
 
-if __name__ == '__main__':
-   sys.exit(main())
 
+if __name__ == '__main__':
+    sys.exit(main())
