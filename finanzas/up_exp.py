@@ -69,7 +69,7 @@ def db_postgres(pgquery=None, exp_id=None, value=None, comm=None):
 
 
 def db_oracle(dblist=None, query=None, exp_id=None, value=None, comm=None):
-        current_ts = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S')
+        current_ts = datetime.datetime.now().strftime('%d-%b-%y %I:%M:%S')
         connection = None
         db_user = os.environ.get("ORACLE_USER")
         db_dns =  os.environ.get("ORACLE_CONN")
