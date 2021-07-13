@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/env python
 
 __version__ = "20210610.01"
 
@@ -6,9 +6,11 @@ from lxml import etree
 import os
 import fnmatch
 import sys
+import datetime
 import argparse
 from tabulate import tabulate
 import psycopg2
+import cx_Oracle
 
 
 
@@ -19,6 +21,8 @@ def parse_args():
 
     parser.add_argument('-f', '--filename', dest="filename", help="Specific a XML file")
     parser.add_argument('-d', '--database', action="store_true", help="Insert to postgres DB")
+    parser.add_argument('-o', '--oracle', action="store_true", help="Insert to postgres DB")
+
     local_args = parser.parse_args()
 
     try:
@@ -114,6 +118,37 @@ def db_postgres(list_fac):
             con.close()
 
 
+def db_oracle(list_fac):
+        #print(list_fac)
+
+        #current_ts = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S')
+        connection = None
+        db_user = 'vbrr' #os.environ.get("ORACLE_USER")
+        db_dns =  'vbrrdb_high' #os.environ.get("ORACLE_CONN")
+        db_pwd =  'Lnx141501db$$' #os.environ.get("ORACLE_PWD")
+        #try:
+        c=[]
+        cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
+        connection = cx_Oracle.connect(user=db_user, password=db_pwd, dsn=db_dns)
+        cursor = connection.cursor()
+        for x in list_fac:
+            dia = int(float(x[3]))
+            per = x[4].replace('-', '0')
+            ded = x[5].replace('-', '0')
+            print(str(x[0]), x[1], x[2], float(dia), float(per), float(ded), x[6], x[7])
+            cursor.execute("insert into nomina values (:emp_n, to_date(to_char(:f_inicial,'DD-MON-YY')), to_date(to_char(:f_final,'DD-MON-YY')), "
+                           "to_number(:dias), to_number(:percep), to_number(:deduc), :concepto, to_number(:clave))",
+                        [str(x[0]), x[1], x[2], float(dia), float(per), float(ded), x[6], int(x[7])])
+            connection.commit()
+        #except cx_Oracle.DatabaseError as e:
+        #    print('Error %s' % e)
+        #    sys.exit(1)
+        #finally:
+        #    if connection:
+        connection.close()
+
+
+
 
 
 def main():
@@ -122,8 +157,9 @@ def main():
     #viewnom(args.filename)
     print(tabulate(sorted(viewnom(args.filename), key=lambda x: x[7]), stralign="right", headers= headers))
     if args.database:
-       db_postgres(viewnom(args.filename))
-
+        db_postgres(viewnom(args.filename))
+    if args.oracle:
+        db_oracle(viewnom(args.filename))
 
 if __name__ == '__main__':
    sys.exit(main())
