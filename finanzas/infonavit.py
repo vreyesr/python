@@ -34,9 +34,9 @@ def parse_args():
 def db_oracle():
     args = parse_args()
     connection = None
-    db_user = 'vbrr'  # os.environ.get("ORACLE_USER")
-    db_dns = 'vbrrdb_high'  # os.environ.get("ORACLE_CONN")
-    db_pwd = 'Lnx141501db$$'  # os.environ.get("ORACLE_PWD")
+    db_user = ''  # os.environ.get("ORACLE_USER")
+    db_dns = ''  # os.environ.get("ORACLE_CONN")
+    db_pwd = ''  # os.environ.get("ORACLE_PWD")
     try:
         cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
         connection = cx_Oracle.connect(user=db_user, password=db_pwd, dsn=db_dns)
@@ -61,12 +61,13 @@ def db_oracle():
             connection.commit()
             print(tabulate([(fecha, cpto_id, concepto, origen, trans, seguro, interes, capital, saldo,
                              "Updated to Oracle DB.")]))
-     except cx_Oracle.DatabaseError as e:
+    except cx_Oracle.DatabaseError as e:
         print('Error %s' % e)
         sys.exit(1)
     finally:
         if connection:
             connection.close()
+
 
 def main():
     db_oracle()
