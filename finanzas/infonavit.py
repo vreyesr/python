@@ -7,6 +7,7 @@ import argparse
 from tabulate import tabulate
 import cx_Oracle
 import os
+import platform
 
 
 def parse_args():
@@ -35,11 +36,13 @@ def parse_args():
 def db_oracle():
     args = parse_args()
     connection = None
+    is_window = any(platform.win32_ver())
     db_user = os.environ.get("ORACLE_USER")
     db_dns = os.environ.get("ORACLE_CONN")
     db_pwd = os.environ.get("ORACLE_PWD")
     try:
-        cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
+        if is_window:
+            cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
         connection = cx_Oracle.connect(user=db_user, password=db_pwd, dsn=db_dns)
         cursor = connection.cursor()
         if args.list:
