@@ -2,11 +2,7 @@
 
 __version__ = "20210713.01"
 
-from lxml import etree
-import os
-import fnmatch
 import sys
-import datetime
 import argparse
 from tabulate import tabulate
 import cx_Oracle
@@ -35,17 +31,13 @@ def parse_args():
     return local_args
 
 
-
-
 def db_oracle():
     args = parse_args()
-    current_ts = datetime.datetime.now().strftime('%d-%b-%y %I:%M:%S')
     connection = None
     db_user = 'vbrr'  # os.environ.get("ORACLE_USER")
     db_dns = 'vbrrdb_high'  # os.environ.get("ORACLE_CONN")
     db_pwd = 'Lnx141501db$$'  # os.environ.get("ORACLE_PWD")
     try:
-        c = []
         cx_Oracle.init_oracle_client(lib_dir=r"C:\Program Files\sqldeveloper\instantclient_19_11")
         connection = cx_Oracle.connect(user=db_user, password=db_pwd, dsn=db_dns)
         cursor = connection.cursor()
@@ -53,31 +45,23 @@ def db_oracle():
             cursor.execute("select * from infonavit order by fecha, origen")
             list_data = cursor.fetchall()
             print(tabulate(list_data, floatfmt=".2f"))
-        if args.fecha and args.seguro and args.interes:
+        if args.fecha and args.trans and args.saldo:
             fecha = args.fecha
             cpto_id = '7001'
             concepto = 'SEGURO/COMISION'
             origen = '-'
-            trans =args.trans
-            seguro = args.seguro
+            trans = args.trans
+            seguro = trans
             interes = 0
             capital = 0
             saldo = args.saldo
-            cursor.execute(
-                "insert into expenses values (:fecha, :concep_id, :concepto, :origen, :trans, :seguro, :interes, :capital, :saldo)",
-                [fecha, concepto, origen, trans, interes, capital, saldo])
+            cursor.execute("insert into infonavit values (to_date(:fecha,'YYYY-MM-DD'), :concep_id, :concepto, :origen,"
+                           " :trans, :seguro, :interes, :capital, :saldo)",
+                           [fecha, cpto_id, concepto, origen, trans, seguro, interes, capital, saldo])
             connection.commit()
-
-        '''    
-            if query:
-                cursor.execute(
-                    "select a.fecha, b.concepto, a.cant, a.commentario from expenses a, exp_cpto b where a.cpto_id = b.cpto_id order by fecha")
-                list_data = cursor.fetchall()
-                print(tabulate(list_data))
-            if exp_id and value and comm:
-                print([int(exp_id), current_ts, float(value), comm])
-        '''
-    except cx_Oracle.DatabaseError as e:
+            print(tabulate([(fecha, cpto_id, concepto, origen, trans, seguro, interes, capital, saldo,
+                             "Updated to Oracle DB.")]))
+     except cx_Oracle.DatabaseError as e:
         print('Error %s' % e)
         sys.exit(1)
     finally:
