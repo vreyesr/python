@@ -2,10 +2,10 @@
 import PyPDF2
 import os
 
-ENCRYPTED_FILE_PATH = './files/executive_order_encrypted.pdf'
-FILE_OUT_PATH = './files/executive_order_out.pdf'
+ENCRYPTED_FILE_PATH = '/home/vreyesr/2753445089_201101_C1.pdf'
+FILE_OUT_PATH = '/home/vreyesr/output.pdf'
 
-PASSWORD='hoge1234'
+PASSWORD='RERV730214'
 
 with open(ENCRYPTED_FILE_PATH, mode='rb') as f:
     reader = PyPDF2.PdfFileReader(f)
@@ -19,16 +19,3 @@ with open(ENCRYPTED_FILE_PATH, mode='rb') as f:
                 reader = PyPDF2.PdfFileReader(fp)
                 print(f"Number of page: {reader.getNumPages()}")
 
-import PyPDF2
-
-# creating a pdf file object
-
-
-
-ENCRYPTED_FILE_PATH = 'D:\\vbrr_data\\finanazas\\ahorro\\bancomer\\5089\\2011\\2753445089_201101_C1.pdf'
-
-with open(ENCRYPTED_FILE_PATH, mode='rb') as f:
-    reader = PyPDF2.PdfFileReader(f)
-    if reader.isEncrypted:
-        reader.decrypt('RERV730214')
-        print(f"Number of page: {reader.getNumPages()}")
