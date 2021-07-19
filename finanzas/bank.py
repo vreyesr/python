@@ -11,7 +11,7 @@ import time
 import platform
 
 
-def get_fecha(b_fecha, year='2012'):
+def get_fecha(b_fecha, year='2014'):
     dia = b_fecha.split('/')[0]
     mes = b_fecha.split('/')[1]
     min = time.localtime().tm_min
@@ -100,7 +100,8 @@ def db_oracle():
             clabe = os.environ.get("CLABE")
             list_result = []
             insert_list = []
-            with open(r'D:\test.txt') as f:
+            #with open(r'D:\test.txt') as f:
+            with open(r'/mnt/hgfs/D/test.txt') as f:
                 list_result.extend(f.readlines())
             print(len(list_result), [len(x.split(',')) for x in list_result])
             for x in list_result:
@@ -114,7 +115,7 @@ def db_oracle():
                                     float(x.split(',')[6]),
                                     float(x.split(',')[7])))  # for x in list_result])
                 time.sleep(1)
-            print(insert_list)
+            #print(insert_list)
             for k in insert_list:
                 print(k)
             if args.yes:
