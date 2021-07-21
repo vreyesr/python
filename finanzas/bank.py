@@ -11,7 +11,7 @@ import time
 import platform
 
 
-def get_fecha(b_fecha, year='2014'):
+def get_fecha(b_fecha, year='2015'):
     dia = b_fecha.split('/')[0]
     mes = b_fecha.split('/')[1]
     min = time.localtime().tm_min
@@ -71,7 +71,7 @@ def get_file_format():
     d=f.readlines()
     a= [x.strip() for x in d if x.strip()]
     for k in a:
-        if len(k) == 6 and 'ENE' in k or 'FEB' in k or 'MAR' in k or 'ABR' in k or 'MAY' in k or 'JUN' in k or 'JUL' in k or 'AGO' in k or 'SEP' in k or 'OCT' in k or 'NOV' in k or 'DEC' in k and k.split('/')[0].isdigit():
+        if len(k) == 6 and 'ENE' in k or 'FEB' in k or 'MAR' in k or 'ABR' in k or 'MAY' in k or 'JUN' in k or 'JUL' in k or 'AGO' in k or 'SEP' in k or 'OCT' in k or 'NOV' in k or 'DIC' in k and k.split('/')[0].isdigit():
 
             l.append(k)
             l1.append(k)
