@@ -119,10 +119,12 @@ def get_file_format():
     #    print(x)
     #print(len(final))
     deploy=[]
-    deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split()[0], x[6].split()[1] + ' ' + x[6].split()[2], x[3],'0', x[4] ,x[5] ] for x in final if 'TEF' in x[2] and len(x) == 7])
+    #deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split()[0], x[6].split()[1] + ' ' + x[6].split()[2], x[3],'0', x[4] ,x[5] ] for x in final if 'TEF' in x[2] and not 'SPEI' in x[2] and len(x) == 7])
     # SPEI
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split()[0], x[4].split()[1] + ' ' + x[4].split()[2], '0', x[3] , '0', '0' ] for x in final if 'SPEI' in x[2] and not 'MEXICO' in x[4] if len(x) == 5 ])
-    deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split('CV')[0] + 'CV', x[4].split('CV')[1].lstrip(), '0', x[3] , '0', '0' ] for x in final if 'SPEI' in x[2] and 'MEXICO' in x[4] and len(x) == 5 ])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split('CV')[1] + 'CV', x[4].split('CV')[1].lstrip(), '0', x[3] , '0', '0' ] for x in final if 'SPEI' in x[2] and 'MEXICO' in x[4] and len(x) == 5 ])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split('MEXICO')[0] + 'MEXICO' , x[6].split('MEXICO')[1].lstrip(), '0', x[3], x[4], x[5]] for x in final if len(x) == 7 and 'SPEI' ])
+
     # TRANSPASO
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split()[0] + ' ' + x[6].split()[1] + ' ' + x[6].split()[2], x[6].split()[3], x[3],'0', x[4] ,x[5] ] for x in final if 'TRASP' in x[2] and len(x) == 7])
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split()[0] + ' ' + x[4].split()[1] + ' ' + x[4].split()[2], x[4].split()[3], x[3], '0', '0', '0' ] for x in final if 'TRASP' in x[2] and len(x) == 5 ])
@@ -133,7 +135,12 @@ def get_file_format():
     # COMPRA & VENTA
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split('BNET')[0] + 'BNET', x[4].split('BNET')[1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'CANAL' in x[4] and 'COMPRA' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split('BNET')[0] + 'BNET', x[6].split('BNET')[1].lstrip(), x[3], '0', x[4], x[5]] for x in final if len(x) == 7  and 'CANAL' in x[6] and 'COMPRA' in x[2]])
+
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[4].split('BNET')[0] + 'BNET', x[4].split('BNET')[1].lstrip(), '0', x[3], '0', '0' ] for x in final if len(x) == 5 and 'CANAL' in x[4] and 'VENTA' in x[2]])
+
+    #DONATIVO
+    deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split()[0] , x[6].split()[1],x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'DONATIVO' in x[2] ])
+
     #for k in deploy:
     #    print(k)
     return deploy
