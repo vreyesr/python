@@ -11,7 +11,7 @@ import time
 import platform
 
 
-def get_fecha(b_fecha, year='2016'):
+def get_fecha(b_fecha, year='2017'):
     dia = b_fecha.split('/')[0]
     mes = b_fecha.split('/')[1]
     min = time.localtime().tm_min
@@ -157,9 +157,21 @@ def get_file_format():
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split()[0] , x[6].split()[1],x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'DONATIVO' in x[2] ])
     deploy.extend([[x[0], x[1], x[2] + ' ' + x[4].split()[0], x[4].split()[1], x[3], '0', '0', '0'] for x in final if len(x) == 5 and 'DONATIVO' in x[2]])
 
-    #AXTEL & SiAPA
+    #AXTEL & SiAPA & PREDIAL
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-1]) , x[4].split()[-1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'AXTEL' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'AXTEL' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-1]) , x[4].split()[-1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'INTERMUNICI' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'INTERMUNICI' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-1]) , x[4].split()[-1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'MUNICIPIO' in x[2]])
+
+    # OTROS
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'BANCOMER' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-2]) , " ".join(x[6].split()[-2:]).lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'TEF ENVIADO' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'OLD' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'PAGO' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-1]) , x[4].split()[-1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'PAGO' in x[2]])
+
+
 
 
     #ORDEN
@@ -245,6 +257,7 @@ def db_oracle():
                 cursor.executemany("insert into bancomer values (:cuenta, :clabe, to_date(:oper,'YYYY-MM-DD HH24:MI'), to_date(:liq,'YYYY-MM-DD HH24:MI'), :descripcion, :referencia, :cargos,"
                     " :abonos, :operacion, :liquidacion)", insert_list)
                 connection.commit()
+                print("COMMITED TO DB !")
     except cx_Oracle.DatabaseError as e:
         print('Error %s' % e)
         sys.exit(1)
