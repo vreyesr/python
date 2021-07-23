@@ -11,7 +11,7 @@ import time
 import platform
 
 
-def get_fecha(b_fecha, year='2018'):
+def get_fecha(b_fecha, year='2019'):
     dia = b_fecha.split('/')[0]
     mes = b_fecha.split('/')[1]
     min = time.localtime().tm_min
@@ -67,7 +67,8 @@ def get_file_format():
     t=[]
     l=[]
     l1=[]
-    f=open(r'D:\test.txt', 'r')
+    #jlf=open(r'D:\test.txt', 'r')
+    f=open(r'/home/vreyesr/test.txt', 'r')
     d=f.readlines()
     a= [x.strip() for x in d if x.strip()]
     for k in a:
@@ -134,6 +135,7 @@ def get_file_format():
     deploy.extend([[x[0],x[1],x[2] + x[4].split()[0], x[4].split()[1],  '0', x[3], '0', '0'] for x in final if len(x) == 5 and 'SPEI' in x[2] and not 'ORACLE' in x[4] ])
     deploy.extend([[x[0],x[1],x[2] + ' ' + x[6].split('MEXICO')[0] + 'MEXICO' , x[6].split('MEXICO')[1].lstrip(), '0', x[3], x[4], x[5]] for x in final if len(x) == 7 and 'SPEI' in x[2] and 'ORACLE' in x[4] ])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-2]), " ".join(x[6].split()[-2:]), '0', x[3], x[4], x[5]] for x in final if len(x) == 7 and 'SPEI' in x[2] and 'ORACLE' in x[6] ])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-2]), " ".join(x[6].split()[-2:]), '0', x[3], x[4], x[5]] for x in final if len(x) == 7 and 'SPEI' in x[2] and 'TC' in x[6] ])
 
 
     # TRANSPASO
@@ -174,7 +176,7 @@ def get_file_format():
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'BANCOMER' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-2]) , " ".join(x[4].split()[-2:]).lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'TEF ENVIADO' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-2]) , " ".join(x[6].split()[-2:]).lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'TEF ENVIADO' in x[2]])
-    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'OLD' in x[2]])
+    deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'PAGO' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'MUNICIPIO' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[4].split()[:-1]) , x[4].split()[-1].lstrip(), x[3], '0', '0', '0' ] for x in final if len(x) == 5 and 'VOLKS' in x[2]])
     deploy.extend([[x[0],x[1],x[2] + ' ' + " ".join(x[6].split()[:-1]) , x[6].split()[-1].lstrip(), x[3], '0', x[4], x[5] ] for x in final if len(x) == 7 and 'VOLKS' in x[2]])
